@@ -57,7 +57,7 @@ class data_recorder(object):
         # print(label)
 
         # change directory to specific folder
-        directory = '/home/aj/images/'
+        directory = '/home/aj/images/collision_walls'
         os.chdir(directory)
 
         cv2.imwrite(label, self.image)
