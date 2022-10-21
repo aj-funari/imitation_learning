@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from cmd import Cmd
 import os
 import cv2
 import torch
