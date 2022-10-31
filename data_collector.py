@@ -2,6 +2,7 @@
 
 import os
 import cv2
+import csv
 import torch
 import rospy
 from datetime import datetime
@@ -51,20 +52,26 @@ class data_recorder(object):
         2) Save current robot camera images to folder linear/angular velocity as labels
     '''
     def cmd_callback(self, msg):
-        # reformat cmd_vel message to x-z-timestamp
-        label = self.format(str(msg))
-        # print(label)
-
-        # change directory to specific folder
-        directory = '/home/aj/images/collision_walls'
+        # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image 
+        label = self.format_to_save_image(str(msg))
+        
+        # change to folder directory
+        directory = '/home/aj/images/avoid_walls'
         os.chdir(directory)
 
+        # save image to folder
         cv2.imwrite(label, self.image)
-
         self.count += 1
         print(self.count,"images saved")
 
-    def format(self, string):
+        print(label)
+        action = self.format_for_customized_dataset(label)
+        # print(action)
+        f = open('/home/aj/images/labels/avoid_walls_labels.csv', 'w')
+        f.write("Hello")
+        f.write("\n")
+
+    def format_to_save_image(self, string):
         msg = string.split()
         x = msg[2]
         z = msg[13]
@@ -72,7 +79,29 @@ class data_recorder(object):
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         msg = msg + '-' + current_time + '-' + '.jpeg'
-        return(msg) 
+        return(msg)
+
+    def format_for_customized_dataset(self, label):
+        label = label.split('-')
+
+        if len(label) == 4:  # positive x and z coordinates
+            x = label[0]
+            z = label[1]
+        
+        if len(label) == 5:  # negative x or z coordinate
+            if label[0] == '': # -x
+                x = '-' + label[1]
+                z = label[2]
+            if label[1] == '': # -z
+                x = label[0]
+                z = '-' + label[2]
+
+        if len(label) == 6:  # negative x and z coordinates
+            x = '-' + label[1]
+            z = '-' + label[3]
+
+        action = [x, z]
+        return (action)
 
 if __name__ =='__main__':
     print("I am in main!")
