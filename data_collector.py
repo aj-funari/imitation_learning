@@ -53,7 +53,8 @@ class data_recorder(object):
     '''
     def cmd_callback(self, msg):
         # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image 
-        label = self.format_to_save_image(str(msg))
+        label = self.format_label(str(msg))
+        print("image label:", label)
         
         # change to folder directory
         directory = '/home/aj/images/avoid_walls'
@@ -62,16 +63,9 @@ class data_recorder(object):
         # save image to folder
         cv2.imwrite(label, self.image)
         self.count += 1
-        print(self.count,"images saved")
+        # print(self.count,"images saved")
 
-        print(label)
-        action = self.format_for_customized_dataset(label)
-        # print(action)
-        f = open('/home/aj/images/labels/avoid_walls_labels.csv', 'w')
-        f.write("Hello")
-        f.write("\n")
-
-    def format_to_save_image(self, string):
+    def format_label(self, string):
         msg = string.split()
         x = msg[2]
         z = msg[13]
@@ -80,28 +74,6 @@ class data_recorder(object):
         current_time = now.strftime("%H:%M:%S")
         msg = msg + '-' + current_time + '-' + '.jpeg'
         return(msg)
-
-    def format_for_customized_dataset(self, label):
-        label = label.split('-')
-
-        if len(label) == 4:  # positive x and z coordinates
-            x = label[0]
-            z = label[1]
-        
-        if len(label) == 5:  # negative x or z coordinate
-            if label[0] == '': # -x
-                x = '-' + label[1]
-                z = label[2]
-            if label[1] == '': # -z
-                x = label[0]
-                z = '-' + label[2]
-
-        if len(label) == 6:  # negative x and z coordinates
-            x = '-' + label[1]
-            z = '-' + label[3]
-
-        action = [x, z]
-        return (action)
 
 if __name__ =='__main__':
     print("I am in main!")

@@ -17,4 +17,4 @@ Script #3: Create model (skeleton)
 Script #4: Train model
 * customized dataset
 * model (skeleton)
-* evaluate results 
+* evaluate results
