@@ -1,5 +1,7 @@
 import os
 import cv2
+import torch
+import pandas as pd
 
 """
 Read through folder where images are being stored and write each label
@@ -37,10 +39,10 @@ def csv_save_to_file():
 
         f.write(f"{save_label}, {action} \n")  # save image label and action to csv file
 
-
 """
 Reformat linear/angular velocities in csv file from string
-into floats. Float value is needed for MSE function. 
+into floats.
+- float or tensor value is needed for MSE function. 
 """
 
 def csv_format(x, z):
@@ -53,7 +55,12 @@ def csv_format(x, z):
     z = z.strip()
     z = z.strip("'")
 
-    return(float(x), float(z))
+    output = torch.zeros(2)  # tensor([0., 0.])
+    
+    output[0] = float(x)  # sets first index to float(x)
+    output[1] = float(z)  # sets second index to float(z)
+
+    return output
 
 """
 Resize image to match input with neural network
@@ -67,4 +74,15 @@ def resize(img):  # input: 3 x 768 x 1024
     return(img)
 
 if __name__ == "__main__":
-    csv_save_to_file()
+    # csv_save_to_file()
+
+    annotations_file = "/home/aj/images/labels/avoid_walls_labels.csv"
+    img_labels = pd.read_csv(annotations_file)
+    # print(img_labels)
+
+    idx = 0
+    x = img_labels.iloc[idx, 1] 
+    z = img_labels.iloc[idx, 2]
+
+    print(csv_format(x, z))
+
