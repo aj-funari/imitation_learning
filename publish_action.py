@@ -15,7 +15,7 @@ move = Twist()
 
 ### LOAD MODEL
 model = CNN(image_channels=3, num_classes=2)
-PATH = '/home/aj/models/loss_0.4169805347919464.pt'
+PATH = '/home/aj/models/loss_0.23752859234809875.pt'
 model.load_state_dict(torch.load(PATH))
 model.eval()
 # model.to(torch.device('cuda'))

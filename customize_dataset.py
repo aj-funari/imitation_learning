@@ -63,7 +63,7 @@ if __name__ == "__main__":
     learning_rate = 0.001
     weight_decay = 1e-5
     model = CNN(image_channels=3, num_classes=2)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay) 
 
     """
     NOTES:
