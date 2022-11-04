@@ -30,3 +30,5 @@ class CNN(nn.Module):  # input: 224 x 224 x 3
         x = x.reshape(x.shape[0], -1) 
         x = self.fc(x)
         return x
+
+    

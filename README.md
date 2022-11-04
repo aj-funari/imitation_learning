@@ -5,6 +5,7 @@ Script #1: Data collection
   * PS4 Controller
   * Command line
       * rostopic pub /cmd_vel geometry_msgs/Twist -r 10 '[1.0, 0.0, 0.0]' '[0.0, 0.0, 1.0]'
+
   2) Save images to hard drive
   * Subscribe to cmd_vel
   * Subscribe to image

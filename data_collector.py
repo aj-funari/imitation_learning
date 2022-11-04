@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Twist # message type for cmd_vel
 from sensor_msgs.msg import Image # message type for image
+from helpers import resize
 
 bridge = CvBridge()
 move = Twist()
@@ -29,15 +30,18 @@ class data_recorder(object):
         self.rate = rospy.Rate(10)
     
     '''
-    Subscribe to Jackal's front camera 
-        -convert ROS image to cv2 image
-        -save current camera image/view to class variable 
+    Subscribe to Jackal's front camera
+        - save current snapshot to self.image --> needed to save image with label in different function
+            -convert ROS image to cv2 image
+            -resize image to 3 x 224 x 224 for neural network 
     '''
     def img_callback(self, image):
         # try:
             # Convert ROS Image message to OpenCV2
         cv2_img = bridge.imgmsg_to_cv2(image, desired_encoding='rgb8')  # returns array
-        self.image = cv2_img
+        img = resize(cv2_img)  # resize to (224, 224, 3)
+        # print(img.shape)
+        self.image = img
 
         # check image is being received
         # plt.imshow(self.image)
@@ -65,6 +69,10 @@ class data_recorder(object):
         self.count += 1
         # print(self.count,"images saved")
 
+    """
+    Reformat ROS cmd_vel to linear-angular-timestep-.jpeg
+    - This is needed to correctly save images to folder
+    """
     def format_label(self, string):
         msg = string.split()
         x = msg[2]
