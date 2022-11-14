@@ -17,7 +17,7 @@ class CNN(nn.Module):  # input: 224 x 224 x 3
         self.avgpool = nn.AdaptiveAvgPool2d((1,1))
         self.fc = nn.Linear(1*16, num_classes)
 
-    def forward(self, x): 
+    def forward(self, x):
         x = self.conv1(x.float())
         # x = self.bn1(x)
         x = self.conv2(x)
@@ -27,7 +27,7 @@ class CNN(nn.Module):  # input: 224 x 224 x 3
         x = self.relu(x)
         x = self.maxpool(x)
         x = self.avgpool(x)
-        x = x.reshape(x.shape[0], -1) 
+        x = x.reshape(x.shape[0], -1)
         x = self.fc(x)
         return x
 

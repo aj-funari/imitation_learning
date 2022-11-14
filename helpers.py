@@ -7,15 +7,22 @@ import pandas as pd
 Read through folder where images are being stored and write each label
 with reformatted action to csv file. This step is needed for creating
 customized dataset.
-    - Example: 1.0-1.0-14:10:45-.jpeg, ['1.0', '1.0']
+    - Example: 1.0-1.0-14:10:45-.jpeg, ['1.0'], '1.0']
 """
 
-def csv_save_to_file():
-    f = open("/home/aj/images/labels/avoid_walls_labels.csv", 'w')
-    DATADIR = '/home/aj/images/avoid_walls/'
-    
+def save_to_csv_file(DATADIR, labels_file): 
+    f = open(labels_file, 'w')  # open file
+
+    """
+    Loop through folder containing images to retrieve labels
+    - Images are located in a different folder labels csv file. This
+      is the read for multiple directories
+    e.g. DATADIR, LABELDIR 
+    """
+
     for label in os.listdir(DATADIR):
-        save_label = label
+        save_label = label  # e.g. 1.5189604759216309-0.630268931388855-23:18:20-.jpeg
+        # print(save_label)
         label = label.split('-')
 
         if len(label) == 4:  # positive x and z coordinates
@@ -37,7 +44,8 @@ def csv_save_to_file():
 
         action = (x,z)
 
-        f.write(f"{save_label}, {action} \n")  # save image label and action to csv file
+        f.write(f"{save_label}, {action} \n")  # save image label and x-z actions to csv file
+    f.close()  # close file
 
 """
 Reformat linear/angular velocities in csv file from string
@@ -45,7 +53,7 @@ into floats.
 - float or tensor value is needed for MSE function. 
 """
 
-def csv_format(x, z):
+def format_action_for_csv_file(x, z):
     
     x = x.replace("(", "")
     x = x.strip()  # remove white space
@@ -73,16 +81,15 @@ def resize(img):  # input: 3 x 768 x 1024
     img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
     return(img)
 
-if __name__ == "__main__":
-    # csv_save_to_file()
+# if __name__ == "__main__":
+#     # csv_save_to_file()
 
-    annotations_file = "/home/aj/images/labels/avoid_walls_labels.csv"
-    img_labels = pd.read_csv(annotations_file)
-    # print(img_labels)
+#     annotations_file = "/home/aj/images/labels/avoid_walls_labels.csv"
+#     img_labels = pd.read_csv(annotations_file)
+#     # print(img_labels)
 
-    idx = 0
-    x = img_labels.iloc[idx, 1] 
-    z = img_labels.iloc[idx, 2]
+#     idx = 0
+#     x = img_labels.iloc[idx, 1] 
+#     z = img_labels.iloc[idx, 2]
 
-    print(csv_format(x, z))
-
+#     print(format_action_for_csv_file(x, z))

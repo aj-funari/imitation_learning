@@ -18,17 +18,22 @@ move = Twist()
 class data_recorder(object):
 
     def __init__(self):
-        # self.data = None
-        self.image = None
-        self.tensor_x_z_actions = []
-        self.count = 0
         # Node for Subscriber/Publisher
         self.node = rospy.init_node('listener', anonymous=True)
-        self.img = rospy.Subscriber('/front/left/image_raw', Image, self.img_callback)
-        # self.img = rospy.Subscriber('/d400/depth/image_rect_raw', Image, self.img_callback)
-        self.vel = rospy.Subscriber('/jackal_velocity_controller/cmd_vel', Twist, self.cmd_callback)
+
+        # Loop through at a desired rate --> 10: expect 10 times per second
         self.rate = rospy.Rate(10)
+        
+        # Subscribe to topics to obtain data
+        self.img = rospy.Subscriber('/front/left/image_raw', Image, self.img_callback)
+        self.vel = rospy.Subscriber('/jackal_velocity_controller/cmd_vel', Twist, self.cmd_callback)
     
+        # Jackal camera (real world Jackal camera)
+        # self.img = rospy.Subscriber('/d400/depth/image_rect_raw', Image, self.img_callback)
+    
+        self.image_holder = None  
+        self.count = 0
+
     '''
     Subscribe to Jackal's front camera
         - save current snapshot to self.image --> needed to save image with label in different function
@@ -41,33 +46,36 @@ class data_recorder(object):
         cv2_img = bridge.imgmsg_to_cv2(image, desired_encoding='rgb8')  # returns array
         img = resize(cv2_img)  # resize to (224, 224, 3)
         # print(img.shape)
-        self.image = img
+        self.image_holder = img
 
-        # check image is being received
         # plt.imshow(self.image)
         # plt.show()
 
         # except CvBridgeError as e:
             # pass
 
+        # self.count += 1
+        # print(self.count)
+
     '''
     With every published veloity command ...
         1) Reformat geometry Twist message --> (x - z - timestep)
-        2) Save current robot camera images to folder linear/angular velocity as labels
+        2) Save current robot camera images to folder with linear/angular velocity as labels
     '''
     def cmd_callback(self, msg):
+        # print(msg)
         # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image 
         label = self.format_label(str(msg))
-        print("image label:", label)
+        # print("image label:", label)
         
         # change to folder directory
         directory = '/home/aj/images/avoid_walls'
         os.chdir(directory)
 
         # save image to folder
-        cv2.imwrite(label, self.image)
+        cv2.imwrite(label, self.image_holder)
         self.count += 1
-        # print(self.count,"images saved")
+        print(self.count,"images saved")
 
     """
     Reformat ROS cmd_vel to linear-angular-timestep-.jpeg
