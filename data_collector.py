@@ -12,7 +12,20 @@ from geometry_msgs.msg import Twist # message type for cmd_vel
 from sensor_msgs.msg import Image # message type for image
 from helpers import resize
 
-bridge = CvBridge()
+bridge = CvBridge()    def cmd_callback(self, msg):
+        # print(msg)
+        # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image 
+        label = self.format_label(str(msg))
+        # print("image label:", label)
+        
+        # change to folder directory
+        directory = '/home/aj/images/avoid_walls'
+        os.chdir(directory)
+
+        # save image to folder
+        cv2.imwrite(label, self.image_holder)
+        self.count += 1
+        print(self.count,"images saved")
 move = Twist()
 
 class data_recorder(object):
@@ -65,6 +78,10 @@ class data_recorder(object):
     def cmd_callback(self, msg):
         # print(msg)
         # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image 
+        # junhong's modification: directly getting the labels from ROS message, rather than converting it to a string
+        linear_v = msg.linear.x
+        angular_v = msg.angular.z
+        
         label = self.format_label(str(msg))
         # print("image label:", label)
         
