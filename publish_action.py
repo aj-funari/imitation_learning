@@ -15,24 +15,29 @@ move = Twist()
 
 ### LOAD MODEL
 model = CNN(image_channels=3, num_classes=2)
-PATH = '/home/aj/models/loss_0.34640446305274963.pt'
+PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_0.3107045590877533.pt'
+# PATH = '/home/aj/models/loss_0.34640446305274963.pt'
 model.load_state_dict(torch.load(PATH))
 model.eval()
 
 class publish_action(object):
 
     def __init__(self):
-        self.data = None
-        self.left_image = None
-        self.right_image = None
-        self.actions = []
-        self.count = 0
         # Node for Subscriber/Publisher
         self.node = rospy.init_node('talker', anonymous=True)
         self.img = rospy.Subscriber('/front/left/image_raw', Image, self.left_img_callback)
         # self.img_left = rospy.Subscriber('/d400/depth/image_rect_raw', Image, self.left_img_callback)
         self.pub = rospy.Publisher('/jackal_velocity_controller/cmd_vel', Twist, queue_size=10) # definging the publisher by topic, message type
         self.rate = rospy.Rate(10)
+
+        self.actions = []
+        self.linear = None
+        self.angular = None
+
+        # self.data = None
+        # self.left_image = None
+        # self.right_image = None
+        # self.count = 0
 
     def left_img_callback(self, image):
         
@@ -54,7 +59,13 @@ class publish_action(object):
         
         # feed image through neural network
         tensor_out = model(image)
-        self.actions.append(tensor_out) 
+        self.actions.append(tensor_out)
+        # print("tensor out:", tensor_out)
+        # print("linear:", tensor_out[0][0])
+        # print("angular:", tensor_out[0][1])
+
+        self.linear = tensor_out[0][0]
+        self.angular = tensor_out[0][1]
 
         # except CvBridgeError as e:
         #     pass
@@ -69,8 +80,12 @@ class publish_action(object):
             else:
                 if len(self.actions) >= tmp:  # publish actions only when action is sent from neural network output
                     # print("x-z actions:", self.tensor_x_z_actions[i])
-                    x = move.linear.x = self.actions[i][0][0]/4
-                    z = move.angular.z = self.actions[i][0][1]/4
+                    # x = move.linear.x = self.actions[i][0][0]
+                    # z = move.angular.z = self.actions[i][0][1]
+                    # move.linear.x = self.actions[i][0][0]
+                    # move.angular.z = self.actions[i][0][1]
+                    x = move.linear.x = self.linear
+                    z = move.angular.z = self.angular
                     print(x, z)
                     rospy.loginfo("Data is being sent") 
                     self.pub.publish(move)

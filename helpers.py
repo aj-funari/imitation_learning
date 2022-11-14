@@ -7,10 +7,10 @@ import pandas as pd
 Read through folder where images are being stored and write each label
 with reformatted action to csv file. This step is needed for creating
 customized dataset.
-    - Example: 1.0-1.0-14:10:45-.jpeg, ['1.0'], '1.0']
+    - Example: 1.0-1.0-14:10:45-.jpeg, 1.0, 1.0
 """
 
-def save_to_csv_file(DATADIR, labels_file): 
+def save_to_csv_file(DATADIR, labels_file):
     f = open(labels_file, 'w')  # open file
 
     """
@@ -28,23 +28,20 @@ def save_to_csv_file(DATADIR, labels_file):
         if len(label) == 4:  # positive x and z coordinates
             x = label[0]
             z = label[1]
-            action = [x,z]
         
         if len(label) == 5:  # negative x or z coordinate
-            if label[0] == '': # -x
+            if label[0] == '':  # -x
                 x = '-' + label[1]
                 z = label[2]
-            if label[1] == '': # -z
+            if label[1] == '':  # -z
                 x = label[0]
                 z = '-' + label[2]
 
-        if len(label) == 6:  # negative x and z coordinates
+        if len(label) == 6:    # negative x and z coordinates
             x = '-' + label[1]
             z = '-' + label[3]
 
-        action = (x,z)
-
-        f.write(f"{save_label}, {action} \n")  # save image label and x-z actions to csv file
+        f.write(f"{save_label}, {x}, {z} \n")  # save to csv file
     f.close()  # close file
 
 """
@@ -53,21 +50,10 @@ into floats.
 - float or tensor value is needed for MSE function. 
 """
 
-def format_action_for_csv_file(x, z):
-    
-    x = x.replace("(", "")
-    x = x.strip()  # remove white space
-    x = x.strip("'")
-
-    z = z.replace(")", "")
-    z = z.strip()
-    z = z.strip("'")
-
+def csv_label_to_tensor(x, z):
     output = torch.zeros(2)  # tensor([0., 0.])
-    
     output[0] = float(x)  # sets first index to float(x)
     output[1] = float(z)  # sets second index to float(z)
-
     return output
 
 """

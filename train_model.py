@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
 
 from customize_dataset import CustomImageDataset
 from model import CNN
@@ -12,20 +13,19 @@ from helpers import save_to_csv_file
       image2.jpeg, action
       image3.jpeg, action ...
 """
-
-DATADIR = '/home/aj/images/avoid_walls/'  # contains images
-labels_file = '/home/aj/images/labels/avoid_walls_labels.csv'  # location to of csv file
+DATADIR = '/home/aj/catkin_ws/src/imitation_learning/images'
+# DATADIR = '/home/aj/images/avoid_walls/'  # contains images
+labels_file = '/home/aj/catkin_ws/src/imitation_learning/labels.csv'  # location to of csv file
 save_to_csv_file(DATADIR, labels_file)  # save image labels and x-z actions to csv file
-
+# exit()
 # DATADIR = '/home/aj/images/collision_walls/'
-# labels_file = '/home/aj/images/labels/collision_walls_labels.csv'
 # save_to_csv_file(DATADIR, labels_file)  # save image labels and x-z actions to csv file
 
 
 training_data = CustomImageDataset(annotations_file=labels_file, img_dir=DATADIR)
-print(training_data.__getitem__(1))
+# print(training_data.__getitem__(1))
 # print(training_data.img_labels)
-exit()
+# exit()
 
 # LOAD MODEL
 learning_rate = 0.001
@@ -50,10 +50,11 @@ MSELoss() Example::
 
 # mean squared error class
 mse = nn.MSELoss()  # takes tensor as input
-num_training_epochs = 100 # loop through training data n times
-train_dataloader = DataLoader(training_data, batch_size=2, shuffle=True)  # load images/labels into 
+num_training_epochs = 10 # loop through training data n times
+train_dataloader = DataLoader(training_data, batch_size=100, shuffle=True)  # load images/labels into 
 
 # TRAIN MODEL
+plot_loss = []
 for epoch in range(num_training_epochs):  # loop through data 100 times
     data_iter = iter(train_dataloader)
     for train_features, train_labels in data_iter:
@@ -78,8 +79,14 @@ for epoch in range(num_training_epochs):  # loop through data 100 times
         optimizer.step()
         print("loss:", loss.item())
 
+        plot_loss.append(loss.item())
+
+PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_' + str(loss.item()) + '.pt'
 # PATH = '/home/aj/models/loss_' + str(loss.item()) + '.pt'
-# torch.save(model.state_dict(), PATH)
-# print("------------")
-# print("MODEL SAVED!")
-# print("------------")
+torch.save(model.state_dict(), PATH)
+print("------------")
+print("MODEL SAVED!")
+print("------------")
+
+plt.plot(plot_loss)
+plt.show()

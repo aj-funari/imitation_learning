@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torchvision.io import read_image
 
-from helpers import format_action_for_csv_file
+from helpers import csv_label_to_tensor
 
 
 class CustomImageDataset(Dataset):
@@ -20,7 +20,7 @@ class CustomImageDataset(Dataset):
     def __len__(self):
         return len(self.img_labels)
 
-    def __getitem__(self, idx):      # function called every time image reference needed for training
+    def __getitem__(self, idx):      # function called every time image needs to be referenced
         """
         function .iloc --> helps us select a specific cell of csv file
         - In this situation, we are requesting the image labels. They 
@@ -40,7 +40,7 @@ class CustomImageDataset(Dataset):
 
         x = self.img_labels.iloc[idx, 1]  # col 1: linear velocity --> type string
         z = self.img_labels.iloc[idx, 2]  # col 2: angular velocity --> type string
-        label = format_action_for_csv_file(x, z)  # e.g. tensor([2.0000, 0.8548])
+        label = csv_label_to_tensor(x, z)  # e.g. tensor([2.0000, 0.8548])
 
         if self.transform:
             image = self.transform(image)
