@@ -6,7 +6,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torchvision.io import read_image
-
+import glob
 from helpers import csv_label_to_tensor
 
 
@@ -17,8 +17,14 @@ class CustomImageDataset(Dataset):
         self.transform = transform  
         self.target_transform = target_transform
         
+        # junhong modification
+        self.all_image_names = glob.glob("path/to/your/image/folder")
+        
     def __len__(self):
+        # junhong modification
+        return len(self.all_image_names)
         return len(self.img_labels)
+    
 
     def __getitem__(self, idx):      # function called every time image needs to be referenced
         """
@@ -26,6 +32,11 @@ class CustomImageDataset(Dataset):
         - In this situation, we are requesting the image labels. They 
           located in the first column of the csv file
         """
+        # junhong modification
+        label = self.your_parsing_function(self.all_image_names[idx])
+        image = read_image(self.all_image_names[idx])
+        return image, label
+        
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])  # [row, col]
         image = read_image(img_path)  # converts image to tensor
         # print(self.img_labels.iloc[idx, 0])
