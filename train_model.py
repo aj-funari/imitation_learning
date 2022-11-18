@@ -5,27 +5,11 @@ import matplotlib.pyplot as plt
 
 from customize_dataset import CustomImageDataset
 from model import CNN
-from helpers import save_to_csv_file
 
-"""
- CREATE CSV FILE FOR CUSTOM DATASET
- e.g. image1.jpeg, action
-      image2.jpeg, action
-      image3.jpeg, action ...
-"""
-DATADIR = '/home/aj/catkin_ws/src/imitation_learning/images'
-# DATADIR = '/home/aj/images/avoid_walls/'  # contains images
-labels_file = '/home/aj/catkin_ws/src/imitation_learning/labels.csv'  # location to of csv file
-save_to_csv_file(DATADIR, labels_file)  # save image labels and x-z actions to csv file
-# exit()
-# DATADIR = '/home/aj/images/collision_walls/'
-# save_to_csv_file(DATADIR, labels_file)  # save image labels and x-z actions to csv file
+training_data = CustomImageDataset()
 
-
-training_data = CustomImageDataset(annotations_file=labels_file, img_dir=DATADIR)
-# print(training_data.__getitem__(1))
-# print(training_data.img_labels)
-# exit()
+# for i in range(training_data.__len__()):
+        # print(training_data.__getitem__(i))
 
 # LOAD MODEL
 learning_rate = 0.001
@@ -51,7 +35,7 @@ MSELoss() Example::
 # mean squared error class
 mse = nn.MSELoss()  # takes tensor as input
 num_training_epochs = 10 # loop through training data n times
-train_dataloader = DataLoader(training_data, batch_size=100, shuffle=True)  # load images/labels into 
+train_dataloader = DataLoader(training_data, batch_size=500, shuffle=True)  # load images/labels into 
 
 # TRAIN MODEL
 plot_loss = []

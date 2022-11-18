@@ -27,7 +27,7 @@ class data_recorder(object):
         # Subscribe to topics to obtain data
         self.img = rospy.Subscriber('/front/left/image_raw', Image, self.img_callback)
         self.vel = rospy.Subscriber('/jackal_velocity_controller/cmd_vel', Twist, self.cmd_callback)
-    
+
         # Jackal camera (real world Jackal camera)
         # self.img = rospy.Subscriber('/d400/depth/image_rect_raw', Image, self.img_callback)
     
@@ -35,7 +35,7 @@ class data_recorder(object):
         self.count = 0
 
         # list for csv files
-        # self.image_labels = []
+        self.image_labels = []
         # self.linear_v = []
         # self.angular_v = []
 
@@ -65,6 +65,9 @@ class data_recorder(object):
         2) Save current robot camera images to folder with linear/angular velocity as labels
     '''
     def cmd_callback(self, msg):
+        self.count += 1
+        print(f"cmd_callback called {self.count} times")
+    
         # junhong's modification: directly getting the labels from ROS message, rather than converting it to a string
         linear_v = msg.linear.x
         angular_v = msg.angular.z
@@ -78,8 +81,9 @@ class data_recorder(object):
         os.chdir(directory)
 
         # save image to folder
-        # print("length of directory before image saved:", len(os.listdir(directory)))
         cv2.imwrite(label, self.image_holder)
+        self.image_labels.append(label)  # save label
+        
         
         """
         Current issue:
@@ -95,19 +99,6 @@ class data_recorder(object):
           build the csv file from the labels in the folder. 
         """
 
-        # size = 1
-        # if size == len(os.listdir(directory)):
-        #     self.linear_v.append(linear_v)
-        #     self.angular_v.append(angular_v)
-        #     self.image_labels.append(label)
-        #     size += 1
-
-        # x = 0
-        # if len(os.listdir(directory)) > x:  
-            # self.linear_v.append(linear_v)
-            # self.angular_v.append(angular_v)
-            # self.image_labels.append(label)
-        #     x += 1
 
     """
     Reformat ROS Twist message to linear-angular-timestep-.jpeg
@@ -132,6 +123,12 @@ if __name__ =='__main__':
     On exit of ROS node, create labels.csv file --> annotations file for customized dataset
     - save image label, linear velocity, angular velocity
     """
+
+    directory = '/home/aj/catkin_ws/src/imitation_learning/images'
+    print("Number of images saved:", len(os.listdir(directory)))
+
+    print("Number of labels saved:", len(D.image_labels))
+
 
     # f = open("/home/aj/catkin_ws/src/imitation_learning/labels.csv", "w")
     # for i in range(len(D.linear_v)):

@@ -4,6 +4,17 @@ import torch
 import pandas as pd
 
 """
+Resize image to match input with neural network
+- function is being called in data_collector.py
+- image is resized before being saved in folder
+"""
+
+def resize(img):  # input: 3 x 768 x 1024
+    dim = (224, 224)  # output: 224 x 224 x 3
+    img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    return(img)
+
+"""
 Read through folder where images are being stored and write each label
 with reformatted action to csv file. This step is needed for creating
 customized dataset.
@@ -44,28 +55,41 @@ def save_to_csv_file(DATADIR, labels_file):
         f.write(f"{save_label}, {x}, {z} \n")  # save to csv file
     f.close()  # close file
 
+def image_label_to_tensor(label):
+    label = label.split('-')
+
+    if len(label) == 4:  # positive x and z coordinates
+        x = label[0]
+        z = label[1]
+        
+    if len(label) == 5:  # negative x or z coordinate
+        if label[0] == '':  # -x
+            x = '-' + label[1]
+            z = label[2]
+        if label[1] == '':  # -z
+            x = label[0]
+            z = '-' + label[2]
+
+    if len(label) == 6:    # negative x and z coordinates
+        x = '-' + label[1]
+        z = '-' + label[3]
+
+    output = torch.zeros(2)  # tensor([0., 0.])
+    output[0] = float(x)     # sets first index to float(x)
+    output[1] = float(z)     # sets second index to float(z)
+    return output            # returns tensor([[x, z]))
+
 """
 Reformat linear/angular velocities in csv file from string
 into floats.
 - float or tensor value is needed for MSE function. 
 """
 
-def csv_label_to_tensor(x, z):
+def actions_to_tensor(x, z):
     output = torch.zeros(2)  # tensor([0., 0.])
-    output[0] = float(x)  # sets first index to float(x)
-    output[1] = float(z)  # sets second index to float(z)
+    output[0] = float(x)     # sets first index to float(x)
+    output[1] = float(z)     # sets second index to float(z)
     return output
-
-"""
-Resize image to match input with neural network
-- function is being called in data_collector.py
-- image is resized before being saved in folder
-"""
-
-def resize(img):  # input: 3 x 768 x 1024
-    dim = (224, 224)  # output: 224 x 224 x 3
-    img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-    return(img)
 
 # if __name__ == "__main__":
 #     # csv_save_to_file()
