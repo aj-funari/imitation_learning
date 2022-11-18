@@ -34,14 +34,23 @@ MSELoss() Example::
 
 # mean squared error class
 mse = nn.MSELoss()  # takes tensor as input
-num_training_epochs = 10 # loop through training data n times
+num_training_epochs = 5 # loop through training data n times
 train_dataloader = DataLoader(training_data, batch_size=500, shuffle=True)  # load images/labels into 
+
+# move model to GPU 
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # cuda:0
+# model.to(device)
+
 
 # TRAIN MODEL
 plot_loss = []
 for epoch in range(num_training_epochs):  # loop through data 100 times
     data_iter = iter(train_dataloader)
     for train_features, train_labels in data_iter:
+
+        # move data to GPU
+        # train_features.cuda()
+        # train_labels.cuda()
 
         """
         mse = nn.MSELoss()
@@ -52,12 +61,14 @@ for epoch in range(num_training_epochs):  # loop through data 100 times
 
         # print(train_labels.size())  # output: torch.size([64, 2])
 
-        prediction = model(train_features)  # output: torch.size([64, 2])
+        prediction = model(train_features)         # output: torch.size([64, 2])
+        # prediction = model(train_features.cuda())  # move data to GPU
         print("prediction", prediction[0])
         print("labels", train_labels[0])
 
         # loss is a scalar
         loss = mse(prediction, train_labels)
+        # loss = mse(prediction, train_labels.cuda())  # move data to GPU
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
