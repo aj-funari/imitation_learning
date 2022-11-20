@@ -12,8 +12,10 @@ weight_decay = 1e-5
 model = CNN(image_channels=3, num_classes=2)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
-x = torch.randn(64, 3, 224, 224) 
-y = torch.ones(64, 2) * 10
+x = torch.randn(64, 3, 224, 224)
+# print(x)
+y = torch.ones(64, 2) * 5
+# print(y)
 
 mse = nn.MSELoss()
 num_training_epochs = 100

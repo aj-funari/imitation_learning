@@ -53,7 +53,7 @@ class data_recorder(object):
         img = resize(cv2_img)  # resize to (224, 224, 3)
         self.image_holder = img
 
-        # plt.imshow(self.image)
+        # plt.imshow(self.image_holder)
         # plt.show()
 
         # except CvBridgeError as e:
@@ -66,14 +66,17 @@ class data_recorder(object):
     '''
     def cmd_callback(self, msg):
         self.count += 1
-        print(f"cmd_callback called {self.count} times")
+        # print(f"cmd_callback called {self.count} times")
     
         # junhong's modification: directly getting the labels from ROS message, rather than converting it to a string
         linear_v = msg.linear.x
         angular_v = msg.angular.z
+        # print("raw linear:", linear_v)
+        # print("raw angular:", angular_v) 
 
         # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image
         label = self.format_label(linear_v, angular_v)
+        # print(f"{label}\n")
 
         # change folder directory
         directory = '/home/aj/catkin_ws/src/imitation_learning/images'

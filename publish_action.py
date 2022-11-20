@@ -15,7 +15,7 @@ move = Twist()
 
 ### LOAD MODEL
 model = CNN(image_channels=3, num_classes=2)
-PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_0.7064614295959473.pt'
+PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_0.13448978960514069.pt'
 model.load_state_dict(torch.load(PATH))
 model.eval()
 

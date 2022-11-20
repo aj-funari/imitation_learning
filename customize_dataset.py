@@ -23,7 +23,7 @@ class CustomImageDataset(Dataset):
         # self.all_image_names = glob.glob('/home/aj/catkin_ws/src/imitation_learning/images')
 
         # aj modification
-        self.all_image_names = os.listdir(self.dir)
+        self.all_image_names = os.listdir(self.dir) 
         
     def __len__(self):
         # junhong modification
