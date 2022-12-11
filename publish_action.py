@@ -5,7 +5,8 @@ import torch
 import rospy
 import numpy
 from geometry_msgs.msg import Twist # message type for cmd_vel
-from sensor_msgs.msg import Image # message type for image
+from sensor_msgs.msg import Image   # message type for image
+from nav_msgs.msg import Odometry   # message type for odometry 
 from cv_bridge import CvBridge, CvBridgeError
 from model import CNN
 from helpers import resize
@@ -15,7 +16,7 @@ move = Twist()
 
 ### LOAD MODEL
 model = CNN(image_channels=3, num_classes=2)
-PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_0.13448978960514069.pt'
+PATH = '/home/aj/catkin_ws/src/imitation_learning/models/loss_0.15983067452907562.pt'
 model.load_state_dict(torch.load(PATH))
 model.eval()
 
@@ -25,6 +26,7 @@ class publish_action(object):
         # Node for Subscriber/Publisher
         self.node = rospy.init_node('talker', anonymous=True)
         self.img = rospy.Subscriber('/front/left/image_raw', Image, self.left_img_callback)
+        # self.odm = rospy.Subscriber('/odometry/filtered', Odometry, self.odometry)
         # self.img_left = rospy.Subscriber('/d400/depth/image_rect_raw', Image, self.left_img_callback)
         self.pub = rospy.Publisher('/jackal_velocity_controller/cmd_vel', Twist, queue_size=10) # definging the publisher by topic, message type
         self.rate = rospy.Rate(10)
@@ -83,14 +85,19 @@ class publish_action(object):
                     # z = move.angular.z = self.actions[i][0][1]
                     # move.linear.x = self.actions[i][0][0]
                     # move.angular.z = self.actions[i][0][1]
-                    x = move.linear.x = self.linear
-                    z = move.angular.z = self.angular
+                    x = move.linear.x = self.linear * 1.5
+                    z = move.angular.z = self.angular 
                     print(x, z)
                     rospy.loginfo("Data is being sent") 
                     self.pub.publish(move)
                     self.rate.sleep()
                     i += 1
                     tmp += 1
+
+    def odometry(self, msg):
+        pose = msg.pose
+        print(pose)
+        # return msg
 
 if __name__ =='__main__':
     pub = publish_action()

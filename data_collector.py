@@ -72,21 +72,21 @@ class data_recorder(object):
         linear_v = msg.linear.x
         angular_v = msg.angular.z
         # print("raw linear:", linear_v)
-        # print("raw angular:", angular_v) 
+        # print("raw angular:", angular_v, "\n")
 
         # reformat cmd_vel message to 'x-z-timestamp.jpeg' to save image
         label = self.format_label(linear_v, angular_v)
         # print(f"{label}\n")
 
         # change folder directory
+        # directory = '/home/aj/catkin_ws/src/imitation_learning/avoid_walls'
+        # directory = '/home/aj/catkin_ws/src/imitation_learning/collision_walls'
         directory = '/home/aj/catkin_ws/src/imitation_learning/images'
-        # directory = '/home/aj/images/avoid_walls'
         os.chdir(directory)
 
         # save image to folder
         cv2.imwrite(label, self.image_holder)
         self.image_labels.append(label)  # save label
-        
         
         """
         Current issue:

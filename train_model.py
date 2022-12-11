@@ -12,7 +12,7 @@ training_data = CustomImageDataset()
         # print(training_data.__getitem__(i))
 
 # LOAD MODEL
-learning_rate = 0.001
+learning_rate = 0.0001
 weight_decay = 1e-5
 model = CNN(image_channels=3, num_classes=2)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay) 
@@ -34,8 +34,8 @@ MSELoss() Example::
 
 # mean squared error class
 mse = nn.MSELoss()  # takes tensor as input
-num_training_epochs = 50 # loop through training data n times
-train_dataloader = DataLoader(training_data, batch_size=500, shuffle=True)  # load images/labels into 
+num_training_epochs = 25 # loop through training data n times
+train_dataloader = DataLoader(training_data, batch_size=150, shuffle=True)  # load images/labels into 
 
 # move model to GPU 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # cuda:0

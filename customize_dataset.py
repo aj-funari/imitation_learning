@@ -14,6 +14,8 @@ class CustomImageDataset(Dataset):
     def __init__ (self, transform=None, target_transform=None):
         # self.img_labels = pd.read_csv(annotations_file)  # read cvs file
         # self.img_dir = img_dir  # folder containing images
+        # self.dir = '/home/aj/catkin_ws/src/imitation_learning/avoid_walls'/
+        # self.dir = '/home/aj/catkin_ws/src/imitation_learning/collision_walls'
         self.dir = '/home/aj/catkin_ws/src/imitation_learning/images'
         self.transform = transform  
         self.target_transform = target_transform
